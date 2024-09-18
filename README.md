@@ -201,7 +201,7 @@ This will return a list of occupied tables:
 
 Accessing via Browser
 
-Once the server is running, you can also open a browser and navigate to `http://localhost:3000/tables/occupied?start_time=2024-09-12T19:00:00` to view the occupied tables directly in the browser.
+Once the server is running, you can also open a browser and navigate to `curl -X GET "http://localhost:3000/restaurants/1/tables/occupied?time=2024-09-12T19:00:00` to view the occupied tables directly in the browser.
 
 ## Database Seeding
 
