@@ -22,7 +22,7 @@ The design for the Restaurant Reservation System API focuses on delivering a sim
 - First-Come, First-Served Allocation: By default, the system assigns tables based on availability and party size in a first-come, first-served manner. The logic is simple but effective for small to medium-sized restaurants.
 - Time Overlap Handling: Overlapping reservations are prevented through time-based validation, ensuring a table is only reserved when available.
 - Testing: The system is fully tested using RSpec to validate key functionality, including edge cases like overlapping reservations.
-  This design is not over-engineered and meets the requirements without introducing unnecessary complexity, ensuring that performance remains optimal and the system is easy to maintain or extend.
+  This design is not over-engineered and meets the requirements without introducing unnecessary complexity.
 
 ### Core entities:
 
@@ -34,17 +34,26 @@ The design for the Restaurant Reservation System API focuses on delivering a sim
 
 ### Create a Reservation
 
-- Endpoint: POST /reservations
+- Endpoint: `POST /restaurants/:restaurant_id/reservations`
   Request:
 
+  <img width="977" alt="Screenshot 2024-09-18 at 15 32 33" src="https://github.com/user-attachments/assets/8bd92b29-c91b-485a-aa3a-ff31862802f2">
+
   Response:
+
+  <img width="779" alt="Screenshot 2024-09-18 at 15 36 27" src="https://github.com/user-attachments/assets/f6bdcd37-7198-41e8-89d0-f0def8f320cd">
+
+
+  <img width="970" alt="Screenshot 2024-09-18 at 15 36 36" src="https://github.com/user-attachments/assets/98e870ef-754c-4bc5-8574-66c1772b602b">
 
 ### Get Occupied Tables
 
-- Endpoint: GET /tables/occupied
+- Endpoint: `GET /restaurants/:restaurant_id/tables/occupied`
   Request:
 
   Response:
+  
+  <img width="838" alt="Screenshot 2024-09-18 at 15 40 12" src="https://github.com/user-attachments/assets/7cbf67cc-94b5-4a80-8ca2-3cfd630b5885">
 
 ## DB Models
 
@@ -87,22 +96,16 @@ The table_allocation method sorts the filtered tables by size and checks if they
 
 - Table Allocation Logic:
 
-`def table_allocation(tables, party_size, start_time)
-  tables.sort_by(&:size).detect do |table|
-    table.reservations.none? { |r| time_overlap?(r.start_time, r.duration, start_time) }
-  end
-end`
+<img width="918" alt="Screenshot 2024-09-18 at 16 04 10" src="https://github.com/user-attachments/assets/fdbbb823-c7ba-4fbf-a3ce-961522832442">
 
 This sorts the tables by their size (sort_by(&:size)), prioritizing smaller tables to minimize gaps in reservations.
 It checks if the table has any overlapping reservations using the `time_overlap?` method, ensuring the table is free during the requested time.
 
 - Checking for Time Overlaps:
 
-`def time_overlap?(reservation_start, reservation_duration, requested_start)
-  reservation_end = reservation_start + reservation_duration.minutes
-  requested_end = requested_start + reservation_duration.minutes
-  reservation_start <= requested_end && requested_start <= reservation_end
-end`
+<img width="1171" alt="Screenshot 2024-09-18 at 16 03 13" src="https://github.com/user-attachments/assets/ef4925fd-2ee1-40a2-b8c0-3c65b09225ea">
+
+
 
 This method calculates the reservation end time by adding the duration to the start time. It checks whether the requested reservation overlaps with an existing one by ensuring that both the start and end times do not conflict.
 
@@ -126,22 +129,20 @@ This method calculates the reservation end time by adding the duration to the st
   - Ruby: Version 3.0.0+
   - Rails: Version 6.0+
   - PostgreSQL: Version 13 or higher
-  - RSpec: For testing
-
-Ensure you have all dependencies installed before proceeding.
+  - RSpec: Version 5.0+
 
 ### Steps to Set Up the Application
 
-Clone the Repository: Open your terminal and run the following command to clone the repository:
+- Clone the Repository: Open your terminal and run the following command to clone the repository:
 
 `git clone https://github.com/your-repo/restaurant-reservation-api.git`
 `cd restaurant-reservation-api`
 
-Install Dependencies: Install all the necessary gems by running:
+- Install Dependencies: Install all the necessary gems by running:
 
 `bundle install`
 
-Set Up the Database: Create, migrate, and seed the database using the following commands:
+- Set Up the Database: Create, migrate, and seed the database using the following commands:
 
 `rails db:create`
 `rails db:migrate`
@@ -149,21 +150,20 @@ Set Up the Database: Create, migrate, and seed the database using the following 
 
 This will create the PostgreSQL database, apply migrations, and seed it with initial data.
 
-Run the Tests: To ensure everything is working correctly, run the RSpec test suite:
+- Run the Tests: To ensure everything is working correctly, run the RSpec test suite:
 
 `bundle exec rspec`
 
 This will execute all tests and confirm that the reservation system operates as expected.
 
-Start the Rails Server: Once the database is set up, start the Rails server:
+- Start the Rails Server: Once the database is set up, start the Rails server:
 
 `rails server`
 
 By default, the server will be available at `http://localhost:3000`.
 
-API Endpoints
 
-Create a Reservation: You can use cURL or Postman to make a POST request for creating a reservation. Here’s an example using cURL:
+- Create a Reservation: You can use cURL or Postman to make a POST request for creating a reservation. Here’s an example using cURL:
 
 `curl -X POST http://localhost:3000/reservations -H "Content-Type: application/json" -d '{
   "reservation": {
@@ -181,7 +181,7 @@ A successful response will return:
   "reservation_id": 1
 }`
 
-Get Occupied Tables: To check which tables are occupied at a certain time, you can run:
+- Get Occupied Tables: To check which tables are occupied at a certain time, you can run:
 
 `curl -X GET "http://localhost:3000/tables/occupied?start_time=2024-09-12T19:00:00"`
 This will return a list of occupied tables:
@@ -199,9 +199,9 @@ This will return a list of occupied tables:
   }
 ]`
 
-Accessing via Browser
+- Accessing via Browser
 
-Once the server is running, you can also open a browser and navigate to `curl -X GET "http://localhost:3000/restaurants/1/tables/occupied?time=2024-09-12T19:00:00` to view the occupied tables directly in the browser.
+Once the server is running, you can also open a browser and navigate to `http://localhost:3000/restaurants/1/tables/occupied?time=2024-09-12T19:00:00` to view the occupied tables directly in the browser.
 
 ## Database Seeding
 
