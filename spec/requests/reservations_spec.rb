@@ -2,11 +2,16 @@
 
  RSpec.describe "Reservations", type: :request do
   describe "POST /reservations" do
-    it "creates a reservation if a table is available" do
-      restaurant = Restaurant.create!(name: "Test Restaurant")
-      table = restaurant.tables.create!(size: 4)
 
-      post "/restaurants/#{restaurant.id}/reservations", params: {
+    before(:each) do
+      @restaurant = Restaurant.create!(name: "Test Restaurant")
+
+      @table = Table.create!(size: 4, restaurant: @restaurant)
+    end
+
+    it "creates a reservation if a table is available" do
+
+      post "/restaurants/#{@restaurant.id}/reservations", params: {
         reservation: { party_size: 4, start_time: Time.now, duration: 60 }
       }
 
@@ -14,10 +19,8 @@
     end
 
     it "returns an error if no table is available" do
-      restaurant = Restaurant.create!(name: "Test Restaurant")
-      table = restaurant.tables.create!(size: 4)
 
-      post "/restaurants/#{restaurant.id}/reservations", params: {
+      post "/restaurants/#{@restaurant.id}/reservations", params: {
         reservation: { party_size: 5, start_time: Time.now, duration: 60 }
       }
 
@@ -25,21 +28,18 @@
     end
 
     it "does not allow overlapping reservation" do
-
-      table = Table.last
-      table.reservations.create!(
+      @table.reservations.create!(
         party_size: 4,
         start_time: Time.now + 1.hour,
-        duration: 2
+        duration: 60
       )
 
       # Attempt to create another reservation with overlapping time
-      post "/reservations", params: {
+      post "/restaurants/#{@restaurant.id}/reservations", params: {
         reservation: {
-          restaurant_id: restaurant.id,
           party_size: 4,
           start_time: Time.now + 1.hour + 30.minutes, # Overlapping time
-          duration: 2
+          duration: 6
         }
       }
 

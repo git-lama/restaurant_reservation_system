@@ -4,7 +4,9 @@ class ReservationsController < ApplicationController
 
     tables = restaurant.tables.where("size >= ?", reservation_params[:party_size]).to_a
 
-    table = table_allocation(tables, reservation_params[:party_size], reservation_params[:start_time])
+    requested_start = Time.zone.parse(reservation_params[:start_time])
+
+    table = table_allocation(tables, reservation_params[:party_size], requested_start)
 
     if table
       reservation = table.reservations.create!(reservation_params)
