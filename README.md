@@ -209,8 +209,6 @@ To populate the database with sample data, run:
 
 `rails db:seed`
 
-- Sample seed data:
-
 ## Challenges:
 
 Handling overlapping reservations and testing edge cases was a significant focus.
